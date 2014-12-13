@@ -114,7 +114,7 @@ public class DefaultBeliefBase implements BeliefBase {
     }
     
     public boolean add(Literal l) {
-    	return add(l, true);
+    	return add(l, false);
     }
     
     public boolean add(int index, Literal l) {
