@@ -470,22 +470,10 @@ public class TransitionSystem {
                         return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
-                        //3. Belief query order change
-                        List<Unifier> rList = new ArrayList<Unifier>();
-                        while(r.hasNext()) {
-                            rList.add(r.next());
-                        }
-                                    
-                        int rdmSize = rList.size();
-                        if(rdmSize!=0) {
-                            Random rdm = new Random();
-                            confP.C.SO = new Option(pl,rList.get(rdm.nextInt(rdmSize)));
-                            return;
-                        }
-//	                    if (r != null && r.hasNext()) {
-//	                        confP.C.SO = new Option(pl, r.next());
-//	                        return;
-//	                    }
+	                    if (r != null && r.hasNext()) {
+	                        confP.C.SO = new Option(pl, r.next());
+	                        return;
+	                    }
                     } 
                 }
             }
@@ -713,10 +701,12 @@ public class TransitionSystem {
 
         case constraint:
             Iterator<Unifier> iu = ((LogicalFormula)bTerm).logicalConsequence(ag, u);
+
             if (iu.hasNext()) {
                 im.unif = iu.next();
                 updateIntention();
-            } else {
+            } 
+            else {
                 String msg = "Constraint "+h+" was not satisfied ("+h.getSrcInfo()+").";
                 generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots(new Atom("constraint_failed"), msg));
                 logger.fine(msg);
@@ -1025,7 +1015,7 @@ public class TransitionSystem {
                     ap.add(opt);
                 } else {
                     boolean allUnifs = opt.getPlan().isAllUnifs();
-                    Iterator<Unifier> r = context.logicalConsequence(ag, opt.getUnifier());
+                    Iterator<Unifier> r = context.logicalConsequence(ag, opt.getUnifier());                    
                     if (r != null) {
                         while (r.hasNext()) {
                             opt.setUnifier(r.next());
