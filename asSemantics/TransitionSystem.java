@@ -64,6 +64,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -469,10 +470,22 @@ public class TransitionSystem {
                         return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
-                        if (r != null && r.hasNext()) {
-                            confP.C.SO = new Option(pl, r.next());
+                        //3. Belief query order change
+                        List<Unifier> rList = new ArrayList<Unifier>();
+                        while(r.hasNext()) {
+                            rList.add(r.next());
+                        }
+                                    
+                        int rdmSize = rList.size();
+                        if(rdmSize!=0) {
+                            Random rdm = new Random();
+                            confP.C.SO = new Option(pl,rList.get(rdm.nextInt(rdmSize)));
                             return;
                         }
+//	                    if (r != null && r.hasNext()) {
+//	                        confP.C.SO = new Option(pl, r.next());
+//	                        return;
+//	                    }
                     } 
                 }
             }
