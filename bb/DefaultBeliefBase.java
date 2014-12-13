@@ -114,15 +114,11 @@ public class DefaultBeliefBase implements BeliefBase {
     }
     
     public boolean add(Literal l) {
-    	//4. Belief addition position change
-    	return add(l, true);
-    	//return add(l, false);
+    	return add(l, false);
     }
     
     public boolean add(int index, Literal l) {
-    	//4. Belief addition position change
-    	return add(l, true);
-        //return add(l, index != 0);
+        return add(l, index != 0);
     }
     
     protected boolean add(Literal l, boolean addInEnd) {
