@@ -485,10 +485,8 @@ public class Agent {
     /** add the initial beliefs in BB and produce the corresponding events */
     public void addInitialBelsInBB() throws RevisionFailedException {
         // Once beliefs are stored in a Stack in the BB, insert them in inverse order
-    	
-    	//4. Belief addition position change
-    	for(int i=0;i<initialBels.size();i++) {
-        //for (int i=initialBels.size()-1; i >=0; i--) {
+
+        for (int i=initialBels.size()-1; i >=0; i--) {
             Literal b = initialBels.get(i);
 
             // if l is not a rule and has free vars (like l(X)), convert it into a rule like "l(X) :- true."
@@ -762,11 +760,10 @@ public class Agent {
     public boolean believes(LogicalFormula bel, Unifier un) {
         try {
             Iterator<Unifier> iun = bel.logicalConsequence(this, un);
-
-            if (iun != null && iun.hasNext()) {
-                un.compose(iun.next());
-                return true;
-            }
+	        if (iun != null && iun.hasNext()) {
+	            un.compose(iun.next());
+	            return true;
+	        }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "** Error in method believes("+bel+","+un+").",e);
         }
