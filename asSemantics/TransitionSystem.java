@@ -64,7 +64,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -470,10 +469,10 @@ public class TransitionSystem {
                         return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
-	                    if (r != null && r.hasNext()) {
-	                        confP.C.SO = new Option(pl, r.next());
-	                        return;
-	                    }
+                        if (r != null && r.hasNext()) {
+                            confP.C.SO = new Option(pl, r.next());
+                            return;
+                        }
                     } 
                 }
             }
@@ -701,12 +700,10 @@ public class TransitionSystem {
 
         case constraint:
             Iterator<Unifier> iu = ((LogicalFormula)bTerm).logicalConsequence(ag, u);
-
             if (iu.hasNext()) {
                 im.unif = iu.next();
                 updateIntention();
-            } 
-            else {
+            } else {
                 String msg = "Constraint "+h+" was not satisfied ("+h.getSrcInfo()+").";
                 generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots(new Atom("constraint_failed"), msg));
                 logger.fine(msg);
@@ -1015,7 +1012,7 @@ public class TransitionSystem {
                     ap.add(opt);
                 } else {
                     boolean allUnifs = opt.getPlan().isAllUnifs();
-                    Iterator<Unifier> r = context.logicalConsequence(ag, opt.getUnifier());                    
+                    Iterator<Unifier> r = context.logicalConsequence(ag, opt.getUnifier());
                     if (r != null) {
                         while (r.hasNext()) {
                             opt.setUnifier(r.next());
