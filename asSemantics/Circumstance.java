@@ -701,6 +701,7 @@ public class Circumstance implements Serializable {
             e.setAttribute("selected", "true");
             plans.appendChild(e);
         }
+//            alreadyIn.add(getSelectedOption());
 
         // appPlans
         if (getApplicablePlans() != null && !getApplicablePlans().isEmpty()) {

@@ -601,9 +601,11 @@ public class Agent {
         return events.poll();
     }
 
-    public Option selectOption(List<Option> options) {
+    public List<Option> selectOptions(List<Option> options) {
         if (options != null && !options.isEmpty()) {
-            return options.remove(0);
+        	//Test
+        	return options;
+            //return options.remove(0);
         } else {
             return null;
         }
