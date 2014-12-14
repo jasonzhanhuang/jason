@@ -435,7 +435,8 @@ public class TransitionSystem {
     private void applySelAppl() throws JasonException {
         // Rule SelAppl
     	//Test
-        confP.C.SO = conf.ag.selectOptions(confP.C.AP);
+        confP.C.SO = conf.ag.selectOption(confP.C.AP);
+        confP.C.AP.removeAll(confP.C.AP);
 
         if (confP.C.SO != null) {
             confP.step = State.AddIM;
@@ -467,14 +468,12 @@ public class TransitionSystem {
                 if (relUn != null) { // is relevant
                     LogicalFormula context = pl.getContext();
                     if (context == null) { // context is true
-                    	//Test
-                        confP.C.SO.add(new Option(pl, relUn));
+                        confP.C.SO = new Option(pl, relUn);
                         return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
 	                    if (r != null && r.hasNext()) {
-	                    	//Test
-	                        confP.C.SO.add(new Option(pl, r.next()));
+	                    	confP.C.SO = new Option(pl, r.next());
 	                        return;
 	                    }
                     } 
@@ -489,9 +488,7 @@ public class TransitionSystem {
     
     private void applyAddIM() throws JasonException {
         // create a new intended means
-    	//Test
-    	//for(Option op:conf.C.SO) {
-	        IntendedMeans im = new IntendedMeans(conf.C.SO.get(0), conf.C.SE.getTrigger());
+	        IntendedMeans im = new IntendedMeans(conf.C.SO, conf.C.SE.getTrigger());
 	
 	        // Rule ExtEv
 	        if (conf.C.SE.intention == Intention.EmptyInt) {
@@ -542,7 +539,6 @@ public class TransitionSystem {
 	            confP.C.SE.intention.push(im);
 	            confP.C.addIntention(confP.C.SE.intention);
 	        }
-    	//}
         confP.step = State.ProcAct;
     }
 
