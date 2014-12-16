@@ -421,7 +421,7 @@ public class TransitionSystem {
             confP.C.SI = conf.C.SE.intention;
             joinRenamedVarsIntoIntentionUnifier(confP.C.SI.peek(), confP.C.SI.peek().unif);
             updateIntention();
-        } else if (setts.requeue()) {  
+        } else if (setts.requeue()) {
             // if external, then needs to check settings
             confP.C.addEvent(conf.C.SE);
         } else {
@@ -435,7 +435,7 @@ public class TransitionSystem {
     private void applySelAppl() throws JasonException {
         // Rule SelAppl
     	//1. Rule selection order change
-        //confP.C.SO = conf.ag.selectOption(confP.C.AP);
+    	//confP.C.SO = conf.ag.selectOption(confP.C.AP);
 
         if (confP.C.SO != null) {
             confP.step = State.AddIM;
@@ -456,8 +456,8 @@ public class TransitionSystem {
      * @since 1.1
      */
     private void applyFindOp() throws JasonException {
-        confP.step = State.AddIM; // default next step
         //1. Rule selection order change
+    	confP.step = State.AddIM; // default next step
         confP.C.SO = new ArrayList<Option>();
         // get all relevant plans for the selected event
         //Trigger te = (Trigger) conf.C.SE.trigger.clone();
@@ -469,7 +469,7 @@ public class TransitionSystem {
                     LogicalFormula context = pl.getContext();
                     if (context == null) { // context is true
                     	//1. Rule selection order change
-                        confP.C.SO.add(new Option(pl, relUn));               
+                        confP.C.SO.add(new Option(pl, relUn));
                         //return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
@@ -485,32 +485,32 @@ public class TransitionSystem {
             	applyRelApplPlRule2("applicable");
         } else {
             // problem: no plan
-            applyRelApplPlRule2("relevant");   
-        }        
+            applyRelApplPlRule2("relevant");
+        }
     }
     
     private void applyAddIM() throws JasonException {
         // create a new intended means
     		//1. Rule selection order change
-    		for(Option op:conf.C.SO) {
-	        IntendedMeans im = new IntendedMeans(op, conf.C.SE.getTrigger());
-	
+    		//for(Option op:conf.C.SO) {
+    		Random rdm = new Random();
+        	IntendedMeans im = new IntendedMeans(conf.C.SO.get(rdm.nextInt(conf.C.SO.size())), conf.C.SE.getTrigger());
 	        // Rule ExtEv
-	        if (conf.C.SE.intention == Intention.EmptyInt) {
-	            Intention intention = new Intention();
-	            intention.push(im);
-	            confP.C.addIntention(intention);
-	        } else {
+	        if (conf.C.SE.intention == Intention.EmptyInt) {		            
+		        Intention intention = new Intention();
+		        intention.push(im);
+			    confP.C.addIntention(intention);
+	        } 
+	        else {
 	            // Rule IntEv
 	            // begin tail recursion optimisation (TRO)
 	            if (setts.isTROon()) {
 	                IntendedMeans top = confP.C.SE.intention.peek(); // top = the IM that will be removed from the intention due to TRO
 	                if (top != null && top.getTrigger().isGoal() && im.getTrigger().isGoal() && // are both goal
 	                        top.getCurrentStep().getBodyNext() == null && // the plan below is finished
-	                        top.getTrigger().getPredicateIndicator().equals( im.getTrigger().getPredicateIndicator()) // goals are equals
-	                    ) { 
-	                    confP.C.SE.intention.pop(); // remove the top IM
-	                    
+	                        top.getTrigger().getPredicateIndicator().equals(im.getTrigger().getPredicateIndicator()) // goals are equals
+	                    ) {
+	                    confP.C.SE.intention.pop(); // remove the top IM      
 	                    IntendedMeans imBase = confP.C.SE.intention.peek(); // base = where the new IM will be place on top of
 	                    if (imBase != null) {
 	                        // move top relevant values into the base (relevant = renamed vars in base)
@@ -534,15 +534,15 @@ public class TransitionSystem {
 	                                    imBase.renamedVars.function.put(v, v0);
 	                                }
 	                            }
-	                        }            
+	                        }
 	                    }
-	                }           
+	                }
 	                // end of TRO
 	            }
 	            confP.C.SE.intention.push(im);
 	            confP.C.addIntention(confP.C.SE.intention);
 	        }
-    		}
+    		//}
         confP.step = State.ProcAct;
     }
 
