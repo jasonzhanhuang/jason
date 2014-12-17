@@ -492,17 +492,21 @@ public class TransitionSystem {
     private void applyAddIM() throws JasonException {
         // create a new intended means
     		//1. Rule selection order change
-    		for(Option op:conf.C.SO) {
-	        IntendedMeans im = new IntendedMeans(op, conf.C.SE.getTrigger());
+    		//for(Option op:conf.C.SO) {
+	        //IntendedMeans im = new IntendedMeans(op, conf.C.SE.getTrigger());
 	
 	        // Rule ExtEv
 	        if (conf.C.SE.intention == Intention.EmptyInt) {
-	            Intention intention = new Intention();
-	            intention.push(im);
-	            confP.C.addIntention(intention);
+	    		for(Option op:conf.C.SO) {
+		    	    IntendedMeans im = new IntendedMeans(op, conf.C.SE.getTrigger());
+		            Intention intention = new Intention();
+		            intention.push(im);
+		            confP.C.addIntention(intention);
+	    		}
 	        } else {
 	            // Rule IntEv
 	            // begin tail recursion optimisation (TRO)
+            	IntendedMeans im = new IntendedMeans(conf.C.SO.get(0), conf.C.SE.getTrigger());
 	            if (setts.isTROon()) {
 	                IntendedMeans top = confP.C.SE.intention.peek(); // top = the IM that will be removed from the intention due to TRO
 	                if (top != null && top.getTrigger().isGoal() && im.getTrigger().isGoal() && // are both goal
@@ -542,7 +546,7 @@ public class TransitionSystem {
 	            confP.C.SE.intention.push(im);
 	            confP.C.addIntention(confP.C.SE.intention);
 	        }
-    		}
+    		//}
         confP.step = State.ProcAct;
     }
 
