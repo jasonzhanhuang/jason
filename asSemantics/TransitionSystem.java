@@ -476,7 +476,7 @@ public class TransitionSystem {
 	                    	confP.C.SO = new Option(pl, r.next());
 	                        return;
 	                    }
-                    } 
+                    }
                 }
             }
             applyRelApplPlRule2("applicable");   
