@@ -114,15 +114,18 @@ public class DefaultBeliefBase implements BeliefBase {
     }
     
     public boolean add(Literal l) {
-    	return add(l, false);
+    	//4. Belief addition position change
+    	return add(l, true);
+    	//return add(l, false);
     }
     
     public boolean add(int index, Literal l) {
-        return add(l, index != 0);
+    	//4. Belief addition position change
+    	return add(l, true);
+        //return add(l, index != 0);
     }
     
     protected boolean add(Literal l, boolean addInEnd) {
-    	addInEnd = true;
         if (!l.canBeAddedInBB()) {
             logger.log(Level.SEVERE, "Error: '"+l+"' can not be added in the belief base.");
             return false;
