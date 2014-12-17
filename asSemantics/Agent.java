@@ -760,10 +760,22 @@ public class Agent {
     public boolean believes(LogicalFormula bel, Unifier un) {
         try {
             Iterator<Unifier> iun = bel.logicalConsequence(this, un);
-	        if (iun != null && iun.hasNext()) {
-	            un.compose(iun.next());
-	            return true;
-	        }
+            //3. Belief query order change
+            List<Unifier> iunList = new ArrayList<Unifier>();
+            while(iun.hasNext()) {
+                iunList.add(iun.next());
+            }
+                        
+            int rdmSize = iunList.size();
+            if(rdmSize!=0) {
+                Random rdm = new Random();
+                un.compose(iunList.get(rdm.nextInt(rdmSize)));
+                return true;
+            }
+//	        if (iun != null && iun.hasNext()) {
+//	            un.compose(iun.next());
+//	            return true;
+//	        }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "** Error in method believes("+bel+","+un+").",e);
         }

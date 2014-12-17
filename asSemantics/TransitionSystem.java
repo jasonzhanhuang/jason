@@ -434,9 +434,7 @@ public class TransitionSystem {
 
     private void applySelAppl() throws JasonException {
         // Rule SelAppl
-    	//Test
         confP.C.SO = conf.ag.selectOption(confP.C.AP);
-        confP.C.AP.removeAll(confP.C.AP);
 
         if (confP.C.SO != null) {
             confP.step = State.AddIM;
@@ -472,11 +470,23 @@ public class TransitionSystem {
                         return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
-	                    if (r != null && r.hasNext()) {
-	                    	confP.C.SO = new Option(pl, r.next());
-	                        return;
-	                    }
-                    }
+                        //3. Belief query order change
+                        List<Unifier> rList = new ArrayList<Unifier>();
+                        while(r.hasNext()) {
+                            rList.add(r.next());
+                        }
+                        
+                        int rdmSize = rList.size();
+                        if(rdmSize!=0) {
+                            Random rdm = new Random();
+                            confP.C.SO = new Option(pl,rList.get(rdm.nextInt(rdmSize)));
+                            return;
+                        }
+//	                    if (r != null && r.hasNext()) {
+//	                        confP.C.SO = new Option(pl, r.next());
+//	                        return;
+//	                    }
+                    } 
                 }
             }
             applyRelApplPlRule2("applicable");   
@@ -488,57 +498,57 @@ public class TransitionSystem {
     
     private void applyAddIM() throws JasonException {
         // create a new intended means
-	        IntendedMeans im = new IntendedMeans(conf.C.SO, conf.C.SE.getTrigger());
-	
-	        // Rule ExtEv
-	        if (conf.C.SE.intention == Intention.EmptyInt) {
-	            Intention intention = new Intention();
-	            intention.push(im);
-	            confP.C.addIntention(intention);
-	        } else {
-	            // Rule IntEv
-	            
-	            // begin tail recursion optimisation (TRO)
-	            if (setts.isTROon()) {
-	                IntendedMeans top = confP.C.SE.intention.peek(); // top = the IM that will be removed from the intention due to TRO
-	                if (top != null && top.getTrigger().isGoal() && im.getTrigger().isGoal() && // are both goal
-	                        top.getCurrentStep().getBodyNext() == null && // the plan below is finished
-	                        top.getTrigger().getPredicateIndicator().equals( im.getTrigger().getPredicateIndicator()) // goals are equals
-	                    ) { 
-	                    confP.C.SE.intention.pop(); // remove the top IM
-	                    
-	                    IntendedMeans imBase = confP.C.SE.intention.peek(); // base = where the new IM will be place on top of
-	                    if (imBase != null) {
-	                        // move top relevant values into the base (relevant = renamed vars in base)
-	                        for (VarTerm v: imBase.renamedVars) {
-	                            VarTerm vvl = (VarTerm)imBase.renamedVars.function.get(v);
-	                            Term t = top.unif.get(vvl);
-	                            if (t != null) { // if v has got a value in top unif, put the value in the unifier
-	                                if (t instanceof Literal) {
-	                                    //Literal l= (Literal)t.clone();
-	                                    //l.apply(top.unif);
-	                                    Literal l= (Literal)t.capply(top.unif);
-	                                    l.makeVarsAnnon(top.renamedVars);
-	                                    im.unif.function.put(vvl, l);                        
-	                                } else {
-	                                    im.unif.function.put(vvl, t);                        
-	                                }
-	                            } else {
-	                                // the vvl was renamed again in top, just replace in base the new value
-	                                VarTerm v0 = (VarTerm)top.renamedVars.function.get(vvl);
-	                                if (v0 != null) {
-	                                    imBase.renamedVars.function.put(v, v0);
-	                                }
-	                            }
-	                        }            
-	                    }
-	                }           
-	                // end of TRO
-	            }
-	
-	            confP.C.SE.intention.push(im);
-	            confP.C.addIntention(confP.C.SE.intention);
-	        }
+        IntendedMeans im = new IntendedMeans(conf.C.SO, conf.C.SE.getTrigger());
+
+        // Rule ExtEv
+        if (conf.C.SE.intention == Intention.EmptyInt) {
+            Intention intention = new Intention();
+            intention.push(im);
+            confP.C.addIntention(intention);
+        } else {
+            // Rule IntEv
+            
+            // begin tail recursion optimisation (TRO)
+            if (setts.isTROon()) {
+                IntendedMeans top = confP.C.SE.intention.peek(); // top = the IM that will be removed from the intention due to TRO
+                if (top != null && top.getTrigger().isGoal() && im.getTrigger().isGoal() && // are both goal
+                        top.getCurrentStep().getBodyNext() == null && // the plan below is finished
+                        top.getTrigger().getPredicateIndicator().equals( im.getTrigger().getPredicateIndicator()) // goals are equals
+                    ) { 
+                    confP.C.SE.intention.pop(); // remove the top IM
+                    
+                    IntendedMeans imBase = confP.C.SE.intention.peek(); // base = where the new IM will be place on top of
+                    if (imBase != null) {
+                        // move top relevant values into the base (relevant = renamed vars in base)
+                        for (VarTerm v: imBase.renamedVars) {
+                            VarTerm vvl = (VarTerm)imBase.renamedVars.function.get(v);
+                            Term t = top.unif.get(vvl);
+                            if (t != null) { // if v has got a value in top unif, put the value in the unifier
+                                if (t instanceof Literal) {
+                                    //Literal l= (Literal)t.clone();
+                                    //l.apply(top.unif);
+                                    Literal l= (Literal)t.capply(top.unif);
+                                    l.makeVarsAnnon(top.renamedVars);
+                                    im.unif.function.put(vvl, l);                        
+                                } else {
+                                    im.unif.function.put(vvl, t);                        
+                                }
+                            } else {
+                                // the vvl was renamed again in top, just replace in base the new value
+                                VarTerm v0 = (VarTerm)top.renamedVars.function.get(vvl);
+                                if (v0 != null) {
+                                    imBase.renamedVars.function.put(v, v0);
+                                }
+                            }
+                        }            
+                    }
+                }           
+                // end of TRO
+            }
+
+            confP.C.SE.intention.push(im);
+            confP.C.addIntention(confP.C.SE.intention);
+        }
         confP.step = State.ProcAct;
     }
 
@@ -703,11 +713,22 @@ public class TransitionSystem {
 
         case constraint:
             Iterator<Unifier> iu = ((LogicalFormula)bTerm).logicalConsequence(ag, u);
-
-            if (iu.hasNext()) {
-                im.unif = iu.next();
-                updateIntention();
-            } 
+            //3. Belief query order change
+            List<Unifier> iuList = new ArrayList<Unifier>();
+            while(iu.hasNext()) {
+            	iuList.add(iu.next());
+            }
+                        
+            int rdmSize = iuList.size();
+            if(rdmSize!=0) {
+            	Random rdm = new Random();
+            	im.unif = iuList.get(rdm.nextInt(rdmSize));
+            	updateIntention();
+            }
+//            if (iu.hasNext()) {
+//                im.unif = iu.next();
+//                updateIntention();
+//            } 
             else {
                 String msg = "Constraint "+h+" was not satisfied ("+h.getSrcInfo()+").";
                 generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots(new Atom("constraint_failed"), msg));

@@ -204,7 +204,7 @@ public class JadeAgArch extends JadeAg {
     }
 
     class JasonTSReasoner extends CyclicBehaviour {
-    	TransitionSystem ts = jasonBridgeAgArch.getTS();
+        TransitionSystem ts = jasonBridgeAgArch.getTS();
         public void action() {
             if (ts.getSettings().isSync()) {
                 if (processExecutionControlOntologyMsg()) {

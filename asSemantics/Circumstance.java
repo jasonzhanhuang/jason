@@ -55,7 +55,7 @@ public class Circumstance implements Serializable {
     protected List<Option>             RP;
     protected List<Option>             AP;
     protected Event                    SE;
-    protected Option             	   SO;
+    protected Option                   SO;
     protected Intention                SI;
     private   Intention                AI; // Atomic Intention
     private   Event                    AE; // Atomic Event
