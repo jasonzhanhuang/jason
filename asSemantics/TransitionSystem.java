@@ -434,9 +434,8 @@ public class TransitionSystem {
 
     private void applySelAppl() throws JasonException {
         // Rule SelAppl
-    	//Test
-        confP.C.SO = conf.ag.selectOption(confP.C.AP);
-        confP.C.AP.removeAll(confP.C.AP);
+    	//1. Rule selection order change
+        //confP.C.SO = conf.ag.selectOption(confP.C.AP);
 
         if (confP.C.SO != null) {
             confP.step = State.AddIM;
@@ -458,7 +457,8 @@ public class TransitionSystem {
      */
     private void applyFindOp() throws JasonException {
         confP.step = State.AddIM; // default next step
-        
+        //1. Rule selection order change
+        confP.C.SO = new ArrayList<Option>();
         // get all relevant plans for the selected event
         //Trigger te = (Trigger) conf.C.SE.trigger.clone();
         List<Plan> candidateRPs = conf.ag.pl.getCandidatePlans(conf.C.SE.trigger);
@@ -468,18 +468,21 @@ public class TransitionSystem {
                 if (relUn != null) { // is relevant
                     LogicalFormula context = pl.getContext();
                     if (context == null) { // context is true
-                        confP.C.SO = new Option(pl, relUn);
-                        return;
+                    	//1. Rule selection order change
+                        confP.C.SO.add(new Option(pl, relUn));               
+                        //return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
 	                    if (r != null && r.hasNext()) {
-	                    	confP.C.SO = new Option(pl, r.next());
-	                        return;
+	                    	//1. Rule selection order change
+	                    	confP.C.SO.add(new Option(pl, r.next()));
+	                        //return;
 	                    }
                     } 
                 }
             }
-            applyRelApplPlRule2("applicable");   
+            if(confP.C.SO.size()==0)
+            	applyRelApplPlRule2("applicable");
         } else {
             // problem: no plan
             applyRelApplPlRule2("relevant");   
@@ -488,7 +491,9 @@ public class TransitionSystem {
     
     private void applyAddIM() throws JasonException {
         // create a new intended means
-	        IntendedMeans im = new IntendedMeans(conf.C.SO, conf.C.SE.getTrigger());
+    		//1. Rule selection order change
+    		for(Option op:conf.C.SO) {
+	        IntendedMeans im = new IntendedMeans(op, conf.C.SE.getTrigger());
 	
 	        // Rule ExtEv
 	        if (conf.C.SE.intention == Intention.EmptyInt) {
@@ -497,7 +502,6 @@ public class TransitionSystem {
 	            confP.C.addIntention(intention);
 	        } else {
 	            // Rule IntEv
-	            
 	            // begin tail recursion optimisation (TRO)
 	            if (setts.isTROon()) {
 	                IntendedMeans top = confP.C.SE.intention.peek(); // top = the IM that will be removed from the intention due to TRO
@@ -535,10 +539,10 @@ public class TransitionSystem {
 	                }           
 	                // end of TRO
 	            }
-	
 	            confP.C.SE.intention.push(im);
 	            confP.C.addIntention(confP.C.SE.intention);
 	        }
+    		}
         confP.step = State.ProcAct;
     }
 

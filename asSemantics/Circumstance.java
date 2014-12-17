@@ -55,7 +55,8 @@ public class Circumstance implements Serializable {
     protected List<Option>             RP;
     protected List<Option>             AP;
     protected Event                    SE;
-    protected Option             	   SO;
+    //1. Rule selection order change
+    protected List<Option>             SO;
     protected Intention                SI;
     private   Intention                AI; // Atomic Intention
     private   Event                    AE; // Atomic Event
@@ -90,7 +91,7 @@ public class Circumstance implements Serializable {
         PA = new ConcurrentHashMap<Integer, ActionExec>();
         PI = new ConcurrentHashMap<String, Intention>();
         PE = new ConcurrentHashMap<String, Event>();
-        FA = new ArrayList<ActionExec>();       
+        FA = new ArrayList<ActionExec>();
     }
     
     /** set null for A, RP, AP, SE, SO, and SI */
@@ -588,8 +589,9 @@ public class Circumstance implements Serializable {
     public Intention getSelectedIntention() {
         return SI;
     }
-
-    public Option getSelectedOption() {
+    
+    //1. Rule selection order change
+    public List<Option> getSelectedOptions() {
         return SO;
     }
 
@@ -693,14 +695,15 @@ public class Circumstance implements Serializable {
         List<Object> alreadyIn = new ArrayList<Object>();
 
         // option
-        if (getSelectedOption() != null) {
-            alreadyIn.add(getSelectedOption());
-            e = getSelectedOption().getAsDOM(document);
-            e.setAttribute("relevant", "true");
-            e.setAttribute("applicable", "true");
-            e.setAttribute("selected", "true");
-            plans.appendChild(e);
-        }
+        //1. Rule selection order change
+//        if (getSelectedOption() != null) {
+//            alreadyIn.add(getSelectedOption());
+//            e = getSelectedOption().getAsDOM(document);
+//            e.setAttribute("relevant", "true");
+//            e.setAttribute("applicable", "true");
+//            e.setAttribute("selected", "true");
+//            plans.appendChild(e);
+//        }
 
         // appPlans
         if (getApplicablePlans() != null && !getApplicablePlans().isEmpty()) {
