@@ -761,18 +761,16 @@ public class Agent {
         try {
             Iterator<Unifier> iun = bel.logicalConsequence(this, un);
             //3. Belief query order change
-            if(iun != null && iun.hasNext()) {
-	            List<Unifier> iunList = new ArrayList<Unifier>();
-	            while(iun.hasNext()) {
-	                iunList.add(iun.next());
-	            }
-	                        
-	            int rdmSize = iunList.size();
-	            if(rdmSize!=0) {
-	                Random rdm = new Random();
-	                un.compose(iunList.get(rdm.nextInt(rdmSize)));
-	                return true;
-	            }
+            List<Unifier> iunList = new ArrayList<Unifier>();
+            while(iun.hasNext()) {
+                iunList.add(iun.next());
+            }
+                        
+            int rdmSize = iunList.size();
+            if(rdmSize!=0) {
+                Random rdm = new Random();
+                un.compose(iunList.get(rdm.nextInt(rdmSize)));
+                return true;
             }
 //	        if (iun != null && iun.hasNext()) {
 //	            un.compose(iun.next());
