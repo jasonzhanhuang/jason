@@ -470,22 +470,10 @@ public class TransitionSystem {
                         return;
                     } else {
                         Iterator<Unifier> r = context.logicalConsequence(ag, relUn);
-                        //3. Belief query order change
-                        List<Unifier> rList = new ArrayList<Unifier>();
-                        while(r.hasNext()) {
-                            rList.add(r.next());
-                        }
-                        
-                        int rdmSize = rList.size();
-                        if(rdmSize!=0) {
-                            Random rdm = new Random();
-                            confP.C.SO = new Option(pl,rList.get(rdm.nextInt(rdmSize)));
-                            return;
-                        }
-//	                    if (r != null && r.hasNext()) {
-//	                        confP.C.SO = new Option(pl, r.next());
-//	                        return;
-//	                    }
+	                    if (r != null && r.hasNext()) {
+	                        confP.C.SO = new Option(pl, r.next());
+	                        return;
+	                    }
                     } 
                 }
             }
@@ -713,22 +701,11 @@ public class TransitionSystem {
 
         case constraint:
             Iterator<Unifier> iu = ((LogicalFormula)bTerm).logicalConsequence(ag, u);
-            //3. Belief query order change
-            List<Unifier> iuList = new ArrayList<Unifier>();
-            while(iu.hasNext()) {
-            	iuList.add(iu.next());
-            }
-                        
-            int rdmSize = iuList.size();
-            if(rdmSize!=0) {
-            	Random rdm = new Random();
-            	im.unif = iuList.get(rdm.nextInt(rdmSize));
-            	updateIntention();
-            }
-//            if (iu.hasNext()) {
-//                im.unif = iu.next();
-//                updateIntention();
-//            } 
+
+            if (iu.hasNext()) {
+                im.unif = iu.next();
+                updateIntention();
+            } 
             else {
                 String msg = "Constraint "+h+" was not satisfied ("+h.getSrcInfo()+").";
                 generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots(new Atom("constraint_failed"), msg));
