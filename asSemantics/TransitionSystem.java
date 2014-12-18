@@ -311,7 +311,7 @@ public class TransitionSystem {
                     if (!setts.isSync() && !ag.getPL().hasUserKqmlReceivedPlans() && content.isLiteral() && !content.isList()) { // optimisation to jump kqmlPlans
                         if (m.getIlForce().equals("achieve") ) {                             
                             content = add_nested_source.addAnnotToList(content, new Atom(sender));
-                            C.addEvent(new Event(new Trigger(TEOperator.add, TEType.achieve, (Literal)content), Intention.EmptyInt));
+                            C.addGoalEvent(new Event(new Trigger(TEOperator.add, TEType.achieve, (Literal)content), Intention.EmptyInt));
                             added = true;                            
                         } else if (m.getIlForce().equals("tell") ) {
                             content = add_nested_source.addAnnotToList(content, new Atom(sender));
@@ -422,7 +422,7 @@ public class TransitionSystem {
             updateIntention();
         } else if (setts.requeue()) {  
             // if external, then needs to check settings
-            confP.C.addEvent(conf.C.SE);
+            confP.C.addGoalEvent(conf.C.SE);
         } else {
             // current event is external and irrelevant,
             // discard that event and select another one
@@ -1054,7 +1054,10 @@ public class TransitionSystem {
         // a) allow the user to override selectOption and then provide an "unknown" plan; or then
         // b) create the failure event (it is done by SelRelPlan)
         if (e.isInternal() || C.hasListener() || ag.getPL().hasCandidatePlan(e.trigger)) {
-            C.addEvent(e);
+        	if(e.trigger.getType().equals(TEType.achieve))
+        		C.addGoalEvent(e);
+        	else
+        		C.addEvent(e);
             if (logger.isLoggable(Level.FINE)) logger.fine("Added event " + e+ ", events = "+C.getEvents());
         }
     }
@@ -1090,7 +1093,7 @@ public class TransitionSystem {
                     gl.goalFailed(im.getTrigger());
             
             if (failEventIsRelevant) {
-                confP.C.addEvent(failEvent);
+                confP.C.addGoalEvent(failEvent);
                 if (logger.isLoggable(Level.FINE)) logger.fine("Generating goal deletion " + failEvent.getTrigger() + " from goal: " + im.getTrigger());
             } else {
                 logger.warning("No failure event was generated for " + failEvent.getTrigger());
@@ -1102,7 +1105,7 @@ public class TransitionSystem {
             // get the external event (or the one that started
             // the whole focus of attention) and requeue it
             im = i.peek(); //get(0);
-            confP.C.addExternalEv(im.getTrigger());
+            confP.C.addExternalGoalEv(im.getTrigger());
         } else {
             logger.warning("Could not finish intention: " + i + "\tTrigger: " + failEvent.getTrigger());
         }
@@ -1129,7 +1132,7 @@ public class TransitionSystem {
             Event failEvent = findEventForFailure(ev.intention, tevent);
             if (failEvent != null) {
                 setDefaultFailureAnnots(failEvent, tevent.getLiteral(), failAnnots);
-                confP.C.addEvent(failEvent);
+                confP.C.addGoalEvent(failEvent);
                 failEeventGenerated = true;
                 //logger.warning("Generating goal deletion " + failEvent.getTrigger() + " from event: " + ev.getTrigger());
             } else {
@@ -1141,7 +1144,7 @@ public class TransitionSystem {
         // if "discard" is set, we are deleting the whole intention!
         // it is simply not going back to I nor anywhere else!
         else if (setts.requeue()) {
-            confP.C.addEvent(ev);
+            confP.C.addGoalEvent(ev);
             logger.warning("Requeing external event: " + ev);
         } else
             logger.warning("Discarding external event: " + ev);
@@ -1291,7 +1294,7 @@ public class TransitionSystem {
                     Event failEvent = ts.findEventForFailure(i, g); // find fail event for the goal just dropped                  
                     if (failEvent != null) {
                         failEvent.getTrigger().getLiteral().addAnnots(JasonException.createBasicErrorAnnots("deadline_reached", ""));
-                        ts.getC().addEvent(failEvent);
+                        ts.getC().addGoalEvent(failEvent);
                         ts.getLogger().fine("'hard_deadline("+g+")' is generating a goal deletion event: " + failEvent.getTrigger());
                         return 2;
                     } else { // i is finished or without failure plan
@@ -1384,7 +1387,7 @@ public class TransitionSystem {
                 if (!sleepingEvt) {
                     sleepingEvt = true;
                     if (ag.pl.getCandidatePlans(PlanLibrary.TE_JAG_SLEEPING) != null)
-                        C.addExternalEv(PlanLibrary.TE_JAG_SLEEPING);
+                        C.addExternalGoalEv(PlanLibrary.TE_JAG_SLEEPING);
                 } else {
                     getUserAgArch().sleep();
                     return false;
@@ -1406,7 +1409,7 @@ public class TransitionSystem {
                     }    
                 }
                 if (!sleepingEvt && ag.pl.getCandidatePlans(PlanLibrary.TE_JAG_AWAKING) != null) {
-                    C.addExternalEv(PlanLibrary.TE_JAG_AWAKING);
+                    C.addExternalGoalEv(PlanLibrary.TE_JAG_AWAKING);
                 }
             }
             
