@@ -104,7 +104,7 @@ public class fail_goal extends succeed_goal {
 	                failEvent = ts.findEventForFailure(i, g); // find fail event for the goal just dropped	            	
 	            }
 	            if (failEvent != null) {
-	                ts.getC().addGoalEvent(failEvent);
+	                ts.getC().addEvent(failEvent);
 	                ts.getLogger().fine("'.fail_goal("+g+")' is generating a goal deletion event: " + failEvent.getTrigger());
 	                return 2;
 	            } else { // i is finished or without failure plan

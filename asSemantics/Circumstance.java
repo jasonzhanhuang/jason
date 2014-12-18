@@ -90,7 +90,7 @@ public class Circumstance implements Serializable {
         PA = new ConcurrentHashMap<Integer, ActionExec>();
         PI = new ConcurrentHashMap<String, Intention>();
         PE = new ConcurrentHashMap<String, Event>();
-        FA = new ArrayList<ActionExec>();
+        FA = new ArrayList<ActionExec>();       
     }
     
     /** set null for A, RP, AP, SE, SO, and SI */
@@ -105,50 +105,22 @@ public class Circumstance implements Serializable {
 
     public Event addAchvGoal(Literal l, Intention i) {
         Event evt = new Event(new Trigger(TEOperator.add, TEType.achieve, l), i);
-        addGoalEvent(evt);
+        addEvent(evt);
         return evt;
     }
 
-    public void addExternalGoalEv(Trigger trig) {
-        addGoalEvent(new Event(trig, Intention.EmptyInt));
+    public void addExternalEv(Trigger trig) {
+        addEvent(new Event(trig, Intention.EmptyInt));
     }
 
     /** Events */
 
-    public void addGoalEvent(Event ev) {
-        
-    	//6. Goal addition position change
-        if (ev.isAtomic()) {
-            AE = ev;
-        } else {
-            //E.add(ev);
-            List<Event> newE = new ArrayList<Event>(E); // make a list of events to find the best place to insert the new event
-            int pos = 0;
-            for (Event e: newE) {
-                if (!e.getTrigger().isMetaEvent()) {
-                    break;
-                }
-                pos++;
-            }
-            newE.add(pos,ev);
-            E.clear();
-            E.addAll(newE);
-        }
-        
-        // notify listeners
-        if (listeners != null)
-            for (CircumstanceListener el : listeners) 
-                el.eventAdded(ev);
-    }
-    
     public void addEvent(Event ev) {
         
-    	//6. Goal addition position change
-        if (ev.isAtomic()) {
+        if (ev.isAtomic())
             AE = ev;
-        } else {
-            E.add(ev);
-        }
+        else
+            E.add(ev);  
         
         // notify listeners
         if (listeners != null)
