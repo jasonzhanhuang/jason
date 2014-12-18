@@ -528,12 +528,15 @@ public class Agent {
     
     /** includes all initial goals in the agent reasoner */
     public void addInitialGoalsInTS() {
-        for (Literal g: initialGoals) {
-            g.makeVarsAnnon();
-            if (! g.hasSource())
-                g.addAnnot(BeliefBase.TSelf);
-            getTS().getC().addAchvGoal(g,Intention.EmptyInt);            
-        }
+    	for(int i=initialGoals.size()-1;i>=0;i--) {
+        //for (Literal g: initialGoals) {
+    		Literal l = initialGoals.get(i);
+    		l.makeVarsAnnon();
+            if (! l.hasSource())
+            	l.addAnnot(BeliefBase.TSelf);
+            getTS().getC().addAchvGoal(l,Intention.EmptyInt);            
+        //}
+    	}
     }
 
     protected void addInitialGoalsFromProjectInBB() {
