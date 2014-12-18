@@ -33,7 +33,6 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
-import jason.asSyntax.Trigger.TEType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -158,10 +157,7 @@ public class at extends DefaultInternalAction {
         public void run() {
             try {
                 if (!cancelled) {
-                	if(event.getTrigger().getType().equals(TEType.achieve))
-                		ts.getC().addGoalEvent(event);
-                	else
-                		ts.getC().addEvent(event);
+                    ts.getC().addEvent(event);
                     ts.getUserAgArch().wake();
                 }
             } finally {
