@@ -114,7 +114,10 @@ public class resume extends DefaultInternalAction {
                 Intention i = e.getIntention();
                 if (un.unifies(g, e.getTrigger()) || (i != null && i.hasTrigger(g, un))) {
                     ik.remove();
-                    C.addEvent(e);                    
+                	if(e.getTrigger().getType().equals(TEType.achieve))
+                		ts.getC().addGoalEvent(e);
+                	else
+                		ts.getC().addEvent(e);                    
                     if (i != null) 
                         i.setSuspended(false);                
                     //System.out.println("res "+g+" from E "+e.getTrigger());
