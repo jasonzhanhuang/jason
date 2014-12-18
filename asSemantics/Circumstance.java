@@ -126,7 +126,9 @@ public class Circumstance implements Serializable {
             int pos = 0;
             for (Event e: newE) {
                 if (!e.getTrigger().isMetaEvent()) {
-                    break;
+                    //break;
+                	if(e.getTrigger().getType().equals(TEType.achieve))
+                		break;
                 }
                 pos++;
             }
