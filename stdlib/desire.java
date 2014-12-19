@@ -124,7 +124,7 @@ public class desire extends intend {
                     find();
                 //if (solution == null)
                 //    logger.info("* no more solution for "+teFromL+C);
-                return solution != null; 
+                return solution != null;
             }
 
             public Unifier next() {
