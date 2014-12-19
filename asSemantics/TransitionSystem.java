@@ -476,16 +476,17 @@ public class TransitionSystem {
                     } 
                 }
             }
-            applyRelApplPlRule2("applicable");
+            applyRelApplPlRule2("applicable");   
         } else {
             // problem: no plan
-            applyRelApplPlRule2("relevant");
+            applyRelApplPlRule2("relevant");   
         }        
     }
     
     private void applyAddIM() throws JasonException {
         // create a new intended means
         IntendedMeans im = new IntendedMeans(conf.C.SO, conf.C.SE.getTrigger());
+
         // Rule ExtEv
         if (conf.C.SE.intention == Intention.EmptyInt) {
             Intention intention = new Intention();
@@ -537,7 +538,7 @@ public class TransitionSystem {
         }
         confP.step = State.ProcAct;
     }
-    
+
     private void applyProcAct() throws JasonException {
         confP.step = State.SelInt; // default next step
         if (conf.C.hasFeedbackAction()) {
@@ -599,6 +600,7 @@ public class TransitionSystem {
     @SuppressWarnings("unchecked")
     private void applyExecInt() throws JasonException {
         confP.step = State.ClrInt; // default next step
+        
         if (conf.C.SI.isFinished()) {
             return;
         }
@@ -883,9 +885,10 @@ public class TransitionSystem {
             // Rule ClrInt
             if (i == null)
                 return;
+            
             if (i.isFinished()) {
                 // intention finished, remove it
-            	confP.C.dropIntention(i);
+                confP.C.dropIntention(i);
                 //conf.C.SI = null;
                 return;
             }
@@ -1360,8 +1363,9 @@ public class TransitionSystem {
         pc2 = pc1;
         pc1 = C.clone();*/
         
-        try {        	
+        try {
             C.reset();
+
             // run tasks allocated to be performed in the begin of the cycle
             Runnable r = taskForBeginOfCycle.poll();
             while (r != null) {
