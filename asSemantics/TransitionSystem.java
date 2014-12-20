@@ -747,8 +747,7 @@ public class TransitionSystem {
             		conf.C.addEvent(evt);
             		confP.step = State.StartRC;
             	} else {
-                    if (logger.isLoggable(Level.FINE)) logger.fine("Test '"+h+"' failed ("+h.getSrcInfo()+").");
-                    generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots("test_goal_failed", "Failed to test '"+h+"'"));
+            		
             	}
             }
             break;
