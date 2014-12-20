@@ -370,7 +370,7 @@ public class TransitionSystem {
             if (confP.C.SE != null) {
                 if (ag.hasCustomSelectOption() || setts.verbose() == 2) // verbose == 2 means debug mode 
                     confP.step = State.RelPl;
-                else
+                else 
                     confP.step = State.FindOp;
                 return;
             }
@@ -476,10 +476,10 @@ public class TransitionSystem {
                     } 
                 }
             }
-            applyRelApplPlRule2("applicable");
+            applyRelApplPlRule2("applicable");   
         } else {
             // problem: no plan
-            applyRelApplPlRule2("relevant");
+            applyRelApplPlRule2("relevant");   
         }        
     }
     
@@ -730,25 +730,27 @@ public class TransitionSystem {
         case test:
             LogicalFormula f = (LogicalFormula)bTerm;
             if (conf.ag.believes(f, u)) {
-		        body = prepareBodyForEvent(body, u, conf.C.SI.peek());
-		        Trigger te = new Trigger(TEOperator.add, TEType.test, body);
-		        if(conf.ag.pl.getCandidatePlans(te) != null) {
-			        evt = new Event(te, conf.C.SI);
-			        conf.C.addEvent(evt);
-			        confP.step = State.StartRC;
-		        } else {
-		            updateIntention();
-		        }
+                updateIntention();
             } else {
-            	body = prepareBodyForEvent(body, u, conf.C.SI.peek());
-            	Trigger te = new Trigger(TEOperator.del, TEType.test, body);
-            	if(conf.ag.pl.getCandidatePlans(te) != null) {
-            		evt = new Event(te, conf.C.SI);
-            		conf.C.addEvent(evt);
-            		confP.step = State.StartRC;
-            	} else {
-            		
-            	}
+                boolean fail = true;
+                // generate event when using literal in the test (no events for log. expr. like ?(a & b))
+                if (f.isLiteral() && !(f instanceof BinaryStructure)) { 
+                    body = prepareBodyForEvent(body, u, conf.C.SI.peek());
+                    if (body.isLiteral()) { // in case body is a var with content that is not a literal (note the VarTerm pass in the instanceof Literal)
+                        Trigger te = new Trigger(TEOperator.add, TEType.test, body);
+                        evt = new Event(te, conf.C.SI);
+                        if (ag.getPL().hasCandidatePlan(te)) {
+                            if (logger.isLoggable(Level.FINE)) logger.fine("Test Goal '" + h + "' failed as simple query. Generating internal event for it: "+te);
+                            conf.C.addEvent(evt);
+                            confP.step = State.StartRC;
+                            fail = false;
+                        }
+                    }
+                }
+                if (fail) {
+                    if (logger.isLoggable(Level.FINE)) logger.fine("Test '"+h+"' failed ("+h.getSrcInfo()+").");
+                    generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots("test_goal_failed", "Failed to test '"+h+"'"));
+                }
             }
             break;
 
