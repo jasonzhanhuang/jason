@@ -760,10 +760,11 @@ public class Agent {
     public boolean believes(LogicalFormula bel, Unifier un) {
         try {
             Iterator<Unifier> iun = bel.logicalConsequence(this, un);
-	        if (iun != null && iun.hasNext()) {
-	            un.compose(iun.next());
-	            return true;
-	        }
+
+            if (iun != null && iun.hasNext()) {
+                un.compose(iun.next());
+                return true;
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "** Error in method believes("+bel+","+un+").",e);
         }
@@ -1003,4 +1004,5 @@ public class Agent {
 
         return document;
     }
+
 }

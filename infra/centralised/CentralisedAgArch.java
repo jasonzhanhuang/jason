@@ -186,27 +186,26 @@ public class CentralisedAgArch extends AgArch implements Runnable {
     }
 
     public void run() {
-	        synchronized (syncStopRun) {
-	            TransitionSystem ts = getTS();
-	            while (running) {
-	                if (ts.getSettings().isSync()) {
-	                    waitSyncSignal();
-	                    ts.reasoningCycle();
-	                    boolean isBreakPoint = false;
-	                    try {
-	                    	//1. Rule selection order change
-	                        //isBreakPoint = ts.getC().getSelectedOptions().get(0).getPlan().hasBreakpoint();
-	                        if (logger.isLoggable(Level.FINE)) logger.fine("Informing controller that I finished a reasoning cycle "+getCycleNumber()+". Breakpoint is " + isBreakPoint);
-	                    } catch (NullPointerException e) {
-	                        // no problem, there is no sel opt, no plan ....
-	                    }
-	                    informCycleFinished(isBreakPoint, getCycleNumber());
-	                } else {
-	                    incCycleNumber();
-	                    ts.reasoningCycle();
-	                }
-	            }
-	        }
+        synchronized (syncStopRun) {
+            TransitionSystem ts = getTS();
+            while (running) {
+                if (ts.getSettings().isSync()) {
+                    waitSyncSignal();
+                    ts.reasoningCycle();
+                    boolean isBreakPoint = false;
+                    try {
+                        isBreakPoint = ts.getC().getSelectedOption().getPlan().hasBreakpoint();
+                        if (logger.isLoggable(Level.FINE)) logger.fine("Informing controller that I finished a reasoning cycle "+getCycleNumber()+". Breakpoint is " + isBreakPoint);
+                    } catch (NullPointerException e) {
+                        // no problem, there is no sel opt, no plan ....
+                    }
+                    informCycleFinished(isBreakPoint, getCycleNumber());
+                } else {
+                    incCycleNumber();
+                    ts.reasoningCycle();
+                }
+            }
+        }
         logger.fine("I finished!");
     }
 
