@@ -64,6 +64,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -542,36 +543,43 @@ public class TransitionSystem {
     private void applyProcAct() throws JasonException {
         confP.step = State.SelInt; // default next step
         if (conf.C.hasFeedbackAction()) {
-            ActionExec a = conf.ag.selectAction(conf.C.getFeedbackActions());
-            if (a != null) {
-                confP.C.SI = a.getIntention();
-    
-                // remove the intention from PA (PA has all pending action, including those in FA;
-                // but, if the intention is not in PA, it means that the intention was dropped
-                // and should not return to I)
-                if (C.removePendingAction(confP.C.SI.getId()) != null) {
-                    if (a.getResult()) {
-                        // add the intention back in I
-                        updateIntention();
-                        applyClrInt(confP.C.SI);
-                        
-                        if (hasGoalListener())
-                            for (GoalListener gl: getGoalListeners())
-                                for (IntendedMeans im: confP.C.SI) //.getIMs())
-                                    gl.goalResumed(im.getTrigger());
-                    } else {
-                        String reason = a.getFailureMsg();
-                        if (reason == null) reason = "";
-                        ListTerm annots = JasonException.createBasicErrorAnnots("action_failed", reason);
-                        if (a.getFailureReason() != null) 
-                            annots.append(a.getFailureReason());
-                        generateGoalDeletion(conf.C.SI, annots);
-                        C.removeAtomicIntention(); // if (potential) atomic intention is not removed, it will be selected in selInt or selEv and runs again
-                    }
-                } else {
-                    applyProcAct(); // get next action
-                }
-            }
+        	List<ActionExec> actList = conf.C.getFeedbackActions();
+        	synchronized (actList) {
+        		Iterator<ActionExec> i = actList.iterator();
+        		while (i.hasNext()) {
+        			ActionExec a = i.next();
+                    	Intention intention = a.getIntention();
+                    	if (!intention.isSuspended()) {
+                            confP.C.SI = intention;
+                            i.remove();
+                            // remove the intention from PA (PA has all pending action, including those in FA;
+                            // but, if the intention is not in PA, it means that the intention was dropped
+                            // and should not return to I)
+                            if (C.removePendingAction(confP.C.SI.getId()) != null) {
+                                if (a.getResult()) {
+                                    // add the intention back in I
+                                    updateIntention();
+                                    applyClrInt(confP.C.SI);
+                                    
+                                    if (hasGoalListener())
+                                        for (GoalListener gl: getGoalListeners())
+                                            for (IntendedMeans im: confP.C.SI) //.getIMs())
+                                                gl.goalResumed(im.getTrigger());
+                                } else {
+                                    String reason = a.getFailureMsg();
+                                    if (reason == null) reason = "";
+                                    ListTerm annots = JasonException.createBasicErrorAnnots("action_failed", reason);
+                                    if (a.getFailureReason() != null) 
+                                        annots.append(a.getFailureReason());
+                                    generateGoalDeletion(conf.C.SI, annots);
+                                    C.removeAtomicIntention(); // if (potential) atomic intention is not removed, it will be selected in selInt or selEv and runs again
+                                }
+                            } else {
+                                applyProcAct(); // get next action
+                            }
+                    	}
+        		}
+        	}
         }
     }
 
@@ -586,12 +594,18 @@ public class TransitionSystem {
         
         // Rule SelInt1
         if (!conf.C.isAtomicIntentionSuspended() && conf.C.hasIntention()) { // the isAtomicIntentionSuspended is necessary because the atomic intention may be suspended (the above removeAtomicInt returns null in that case)
-                                                                             // but no other intention could be selected
-            confP.C.SI = conf.ag.selectIntention(conf.C.getIntentions());
-            if (logger.isLoggable(Level.FINE)) logger.fine("Selected intention "+confP.C.SI);            
-            if (confP.C.SI != null) { // the selectIntention function returned null
-                return;             
-            }
+            
+        	// but no other intention could be selected
+        	if(conf.C.getIntentions() != null) {
+	        	List<Intention> iList = new ArrayList<Intention>(conf.C.getIntentions());
+	        	for(int i=0;i<iList.size();i++) {
+	        		confP.C.SI = iList.remove(i);
+	        		conf.C.I = new LinkedList<Intention>(iList);
+		            if (logger.isLoggable(Level.FINE)) logger.fine("Selected intention "+confP.C.SI);            
+		            applyExecInt();
+		            applyClrInt(conf.C.SI);
+	        	}
+        	}
         }
 
         confP.step = State.StartRC;
@@ -599,7 +613,7 @@ public class TransitionSystem {
 
     @SuppressWarnings("unchecked")
     private void applyExecInt() throws JasonException {
-        confP.step = State.ClrInt; // default next step
+        //confP.step = State.ClrInt; // default next step
         
         if (conf.C.SI.isFinished()) {
             return;
