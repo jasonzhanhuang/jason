@@ -33,9 +33,6 @@ import jason.asSyntax.InternalActionLiteral;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LogicalFormula;
 import jason.asSyntax.Plan;
-import jason.asSyntax.PlanBody;
-import jason.asSyntax.PlanBody.BodyType;
-import jason.asSyntax.PlanBodyImpl;
 import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.Rule;
 import jason.asSyntax.Term;
@@ -204,8 +201,6 @@ public class Agent {
                 fixAgInIAandFunctions(this); // used to fix agent reference in functions used inside includes
             }
             
-            changeGoalType();
-            
             // kqml Plans at the end of the ag PS
             if (JasonException.class.getResource("/asl/kqmlPlans.asl") != null) { 
                 setASLSrc("kqmlPlans.asl");
@@ -214,23 +209,10 @@ public class Agent {
             } else {
                 logger.warning("The kqmlPlans.asl was not found!");
             }
-            
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error creating customised Agent class!", e);
             throw new JasonException("Error creating customised Agent class! - " + e);
         }
-    }
-    
-    //7. Goal type change
-    private void changeGoalType() {
-    	for(Plan p:pl) {
-    		if(p.getTrigger().getType().equals(TEType.achieve)) {
-	    		PlanBody pb = new PlanBodyImpl();
-	    		pb.setBodyType(BodyType.test);
-	    		pb.setBodyTerm(p.getTrigger().getLiteral());
-	    		p.getBody().add(pb);
-    		}
-    	}
     }
     
     /** @deprecated Prefer the initAg method with only the source code of the agent as parameter.

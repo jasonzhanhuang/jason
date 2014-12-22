@@ -473,13 +473,13 @@ public class TransitionSystem {
                             confP.C.SO = new Option(pl, r.next());
                             return;
                         }
-                    }
+                    } 
                 }
             }
-            applyRelApplPlRule2("applicable");
+            applyRelApplPlRule2("applicable");   
         } else {
             // problem: no plan
-            applyRelApplPlRule2("relevant");
+            applyRelApplPlRule2("relevant");   
         }        
     }
     
