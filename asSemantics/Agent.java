@@ -201,8 +201,6 @@ public class Agent {
                 fixAgInIAandFunctions(this); // used to fix agent reference in functions used inside includes
             }
             
-            changePlanAtomic();
-            
             // kqml Plans at the end of the ag PS
             if (JasonException.class.getResource("/asl/kqmlPlans.asl") != null) { 
                 setASLSrc("kqmlPlans.asl");
@@ -215,13 +213,6 @@ public class Agent {
             logger.log(Level.SEVERE, "Error creating customised Agent class!", e);
             throw new JasonException("Error creating customised Agent class! - " + e);
         }
-    }
-    
-    private void changePlanAtomic() {
-    	for(Plan p:pl) {
-    		p.setAtomic(true);
-    		break;
-    	}
     }
     
     /** @deprecated Prefer the initAg method with only the source code of the agent as parameter.

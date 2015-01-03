@@ -590,16 +590,7 @@ public class TransitionSystem {
             confP.C.SI = conf.ag.selectIntention(conf.C.getIntentions());
             if (logger.isLoggable(Level.FINE)) logger.fine("Selected intention "+confP.C.SI);            
             if (confP.C.SI != null) { // the selectIntention function returned null
-            	if(!conf.C.SI.isFinished()) {
-	            	//IntendedMeans im = conf.C.SI.peek();
-//	            	if(im.isFinished()) {
-//	                    updateIntention();
-//	            	} else {
-//		            	applyExecInt(im);
-//	            	}
-//	            	applyClrInt(conf.C.SI);
-            		return;
-            	}
+                return;             
             }
         }
 
@@ -624,7 +615,6 @@ public class TransitionSystem {
             updateIntention();
             return;
         }
-        
         Unifier     u = im.unif;
         PlanBody    h = im.getCurrentStep();
         

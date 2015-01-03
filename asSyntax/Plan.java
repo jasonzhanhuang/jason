@@ -169,10 +169,6 @@ public class Plan extends Structure implements Cloneable, Serializable {
         return body;
     }
     
-    public void setAtomic(boolean isAtomic) {
-    	this.isAtomic = isAtomic;
-    }
-    
     public boolean isAtomic() {
         return isAtomic;
     }
